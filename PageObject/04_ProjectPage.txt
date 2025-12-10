@@ -1,0 +1,69 @@
+#******************** Settings ************************
+
+*** Settings ***
+
+Documentation	Project Test scenario including CRUD operations: Create, Read, Update, Delete.
+
+Pre Condition	User must be logged in before performing project operations
+Post Condition	Close All Browsers
+Tags	Project, TS-3-Project
+
+#******************* Common Variables ********************
+
+*** Variables ***
+
+ProjectPageUrl = https://gitlab.com/projects/new
+Valid_Project_Name = MyFirstProject
+Valid_Project_Description = This is a sample project.
+Template_Project_Name = TemplateProject01
+Updated_Project_Name = UpdatedTemplateProject
+Duplicate_Project_Name = MyFirstProject
+
+#******************** Test Cases *************************
+
+*** Test Cases ***
+
+# Positive Tests
+
+Create blank project
+    Navigate To Project Page    ProjectPageUrl
+    Select Blank Project Option
+    Input Project Name    Valid_Project_Name
+    Input Project Description    Valid_Project_Description
+    Submit Project Creation Form
+    Verify Page Should Contain    Project 'MyFirstProject' was successfully created.
+
+Create template project
+    Navigate To Project Page    ProjectPageUrl
+    Select Template Project Option
+    Input Project Name    Template_Project_Name
+    Submit Project Creation Form
+    Verify Page Should Contain    Project 'TemplateProject01' was successfully created.
+
+Update name of template project
+    Open Existing Project Settings    Template_Project_Name
+    Input New Project Name    Updated_Project_Name
+    Save Changes
+    Verify Page Should Contain    Successfully updated project name
+
+Delete template project
+    Open Existing Project Settings    Updated_Project_Name
+    Click Delete Project
+    Confirm Deletion
+    Verify Page Should Contain    Project has been deleted
+
+Validate that message is showing Project 'First project' was successfully created.
+    Navigate To Project Page    ProjectPageUrl
+    Select Blank Project Option
+    Input Project Name    First Project
+    Submit Project Creation Form
+    Verify Page Should Contain    Project 'First project' was successfully created.
+
+# Negative Tests
+
+Create a blank project with the previous same name
+    Navigate To Project Page    ProjectPageUrl
+    Select Blank Project Option
+    Input Project Name    Duplicate_Project_Name
+    Submit Project Creation Form
+    Verify Page Should Contain    Name has already been taken

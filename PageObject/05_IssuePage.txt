@@ -1,0 +1,53 @@
+#******************** Settings ************************
+
+*** Settings ***
+
+Documentation	Issue Test scenario. CRUD Operation: Create, Read, Update, Delete.
+
+Pre Condition	Project must be created by the user before testing issue functionality
+Post Condition	Close All Browsers
+Tags	Issue, TS-4-Issue
+
+#******************* Common Variables ********************
+
+*** Variables ***
+
+IssuePageUrl = https://gitlab.com/group-slug/project-slug/-/issues/new
+Valid_Issue_Title = First Issue
+Valid_Issue_Description = This is the first test issue.
+Updated_Issue_Title = Updated First Issue
+Duplicate_Issue_Title = Updated First Issue
+Second_Issue_Title = Second Issue
+
+#******************** Test Cases *************************
+
+*** Test Cases ***
+
+# Positive Tests
+
+Create issue
+    Navigate To Issue Page    IssuePageUrl
+    Input Issue Title    Valid_Issue_Title
+    Input Issue Description    Valid_Issue_Description
+    Submit Issue Form
+    Verify Page Should Contain    Issue has been created successfully
+
+Update name of issue
+    Open Issue    Valid_Issue_Title
+    Click Edit Issue
+    Input New Issue Title    Updated_Issue_Title
+    Save Issue Changes
+    Verify Page Should Contain    Issue has been successfully updated
+
+Create second issue with previous updated name
+    Navigate To Issue Page    IssuePageUrl
+    Input Issue Title    Duplicate_Issue_Title
+    Input Issue Description    Second_Issue_Title
+    Submit Issue Form
+    Verify Page Should Contain    Title has already been taken
+
+Delete first issue
+    Open Issue    Updated_Issue_Title
+    Click Delete Issue
+    Confirm Deletion
+    Verify Page Should Contain    Issue was successfully deleted

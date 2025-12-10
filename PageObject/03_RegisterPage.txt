@@ -1,0 +1,74 @@
+#******************** Settings ************************
+
+*** Settings ***
+
+Documentation	User Registration Test scenario including verification of valid and invalid inputs.
+
+Pre Condition	Open Browser and Navigate to Registration Page
+Post Condition	Close All Browsers
+Tags	Register, TS-2-Register
+
+#******************* Common Variables ********************
+
+*** Variables ***
+
+LoginUrl = https://gitlab.com/users/sign_up
+Valid_Email = testuser@example.com
+Valid_Username = testuser01
+Valid_Password = Password123!
+Invalid_Email = testuserexample.com
+Empty = 
+Short_Password = 123
+Used_Username = testuser01      # Will be used after the valid registration test
+
+#******************** Test Cases *************************
+
+*** Test Cases ***
+
+# Positive Test
+
+Register user with valid username and password
+    Navigate To Registration Page    LoginUrl
+    Input Email    Valid_Email
+    Input Username    Valid_Username
+    Input Password    Valid_Password
+    Solve Captcha or Verify Captcha Placeholder
+    Submit Registration Form
+    Verify Page Should Contain    Welcome to GitLab
+    Store Used Username    Valid_Username
+
+# Negative Tests
+
+Register user with same above username
+    Navigate To Registration Page    LoginUrl
+    Input Email    Valid_Email
+    Input Username    Used_Username
+    Input Password    Valid_Password
+    Solve Captcha or Verify Captcha Placeholder
+    Submit Registration Form
+    Verify Page Should Contain    Username has already been taken
+
+Register user with empty password
+    Navigate To Registration Page    LoginUrl
+    Input Email    Valid_Email
+    Input Username    Valid_Username
+    Input Password    Empty
+    Submit Registration Form
+    Verify Page Should Contain    Password can't be blank
+
+Register user with invalid email
+    Navigate To Registration Page    LoginUrl
+    Input Email    Invalid_Email
+    Input Username    Valid_Username
+    Input Password    Valid_Password
+    Submit Registration Form
+    Verify Page Should Contain    Email is invalid
+
+Register user without recaptcha
+    Navigate To Registration Page    LoginUrl
+    Input Email    Valid_Email
+    Input Username    Valid_Username
+    Input Password    Valid_Password
+    Do Not Solve Captcha
+    Submit Registration Form
+    Verify Page Should Contain    Please verify that you are not a robot
